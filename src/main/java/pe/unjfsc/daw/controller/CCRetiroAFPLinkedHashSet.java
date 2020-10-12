@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import pe.unjfsc.daw.entity.CENatalidad;
+import pe.unjfsc.daw.logical.impl.CMLecheProducidaDia;
 import pe.unjfsc.daw.logical.impl.CMNatalidad;
 
 @Controller
@@ -113,7 +114,78 @@ public class CCRetiroAFPLinkedHashSet {
 		return new ModelAndView(lArchivoRealJsp,"model",myModel);
 	}
 	
+	//START => REGISTRO DE PRODUCCION DE LECHE
 	
+	
+	@Autowired
+	private CMLecheProducidaDia oCMLecheProducidaDia;
+	
+	@RequestMapping(value = "ListadoNatalidad.lhs")
+	public ModelAndView linkedHashSetConsultaProducionLeche() {
+		String lArchivoRealJsp="jspNatalidad";
+		String lFechaSistema=(new Date().toString());		
+		oListaFinal = new LinkedHashSet<CENatalidad>();	
+		oListaFinal = oCMNatalidad.consultAllRetiros();		
+		Map<String, Object> myModel = new HashMap<String,Object>();
+		myModel.put("now", lFechaSistema);
+		myModel.put("listNatalidad", oListaFinal);
+		return new ModelAndView(lArchivoRealJsp,"model",myModel);
+	}
+	
+	@RequestMapping(value="agregarNatalidad.lhs", method=RequestMethod.GET)
+	public ModelAndView addProduccionLeche() {
+		ModelAndView model = new ModelAndView();
+		CENatalidad pCENatalidad = new CENatalidad();
+		model.addObject("natalidadForm", pCENatalidad);
+		model.setViewName("natalidadForm");
+		return model;
+	}
+	
+	@RequestMapping(value="save.lhs", method=RequestMethod.POST)
+	public ModelAndView saveProduccionLeche(@ModelAttribute("natalidadForm") CENatalidad pCENatalidad) {
+		String lArchivoRealJsp="jspNatalidad";
+		oCMNatalidad.saveNatalidad(pCENatalidad);
+		oListaFinal = new LinkedHashSet<CENatalidad>();		
+		oListaFinal = oCMNatalidad.consultAllRetiros();		
+		Map<String, Object> myModel = new HashMap<String,Object>();
+		myModel.put("listNatalidad", oListaFinal);
+		log.info("Registro en controller" + pCENatalidad);
+		return new ModelAndView(lArchivoRealJsp,"model",myModel);
+	}
+	@RequestMapping(value="updateNatalidad.lhs/{CUIA}.lhs", method=RequestMethod.GET)
+	public ModelAndView updateProduccionLeche(@PathVariable int CUIA,CENatalidad pCeNatalidad) {
+		ModelAndView model = new ModelAndView();
+		CENatalidad pCENatalidad = oCMNatalidad.consultByIdCUIA(CUIA);
+		model.addObject("natalidadFormUpdate", pCENatalidad);
+		model.setViewName("natalidadFormUpdate");
+		return model;
+	}
+	
+	@RequestMapping(value = "update.lhs", method=RequestMethod.POST)
+	public ModelAndView updateProduccionLeche(@ModelAttribute("natalidadFormUpdate") CENatalidad pCENatalidad) {
+		String lArchivoRealJsp="jspNatalidad";
+		oCMNatalidad.updateNatalidad(pCENatalidad);
+		oListaFinal = new LinkedHashSet<CENatalidad>();		
+		oListaFinal = oCMNatalidad.consultAllRetiros();		
+		Map<String, Object> myModel = new HashMap<String,Object>();
+		myModel.put("listNatalidad", oListaFinal);
+		log.info("Update en controller" + pCENatalidad);
+		return new ModelAndView(lArchivoRealJsp,"model",myModel);
+	}
+	
+	@RequestMapping(value = "eliminarNatalidad.lhs/{CUIA}.lhs", method=RequestMethod.GET)
+	public ModelAndView deleteProduccionLeche(@PathVariable int CUIA, CENatalidad pCeNatalidad) {
+		String lArchivoRealJsp="jspNatalidad";
+		oCMNatalidad.deleteNatalidad(CUIA);
+		oListaFinal = new LinkedHashSet<CENatalidad>();		
+		oListaFinal = oCMNatalidad.consultAllRetiros();		
+		Map<String, Object> myModel = new HashMap<String,Object>();
+		myModel.put("listNatalidad", oListaFinal);
+		return new ModelAndView(lArchivoRealJsp,"model",myModel);
+	}
+	
+	
+	//END <= REGISTRO DE PRODUCCION DE LECHE
 	
 	
 	
